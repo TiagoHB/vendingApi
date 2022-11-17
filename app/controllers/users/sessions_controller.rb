@@ -12,6 +12,13 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def respond_to_on_destroy
+    if request.headers['Authorization'].blank?
+      render json: {
+        status: { code: 401, message: 'Missing data.' }#, status: :unauthorized
+      }
+      return
+    end
+    
     jwt_payload = JWT.decode(request.headers['Authorization'].split(' ')[1], Rails.application.credentials.devise_jwt_secret_key).first
     # debugger
     current_user = User.find_by_jti(jwt_payload['jti'])

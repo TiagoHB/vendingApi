@@ -1,15 +1,17 @@
 Rails.application.routes.draw do
 
-  devise_for :users, 
-    defaults: { format: :json },
+  devise_for :users,
     controllers: {
       sessions: 'users/sessions',
       resgistrations: 'users/resgistrations'
-    }, 
-    path: '',
-    path_names: { 
-      sign_in: "login",
-      sign_out: "logout",
-      sign_up: "register"
     }
+
+  namespace :api do
+    namespace :v1 do
+      resources :products
+
+      # post "deposit", to: ""
+    end
+  end
+
 end

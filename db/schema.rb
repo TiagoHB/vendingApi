@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_17_000744) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_17_004816) do
+  create_table "products", charset: "utf8mb4", force: :cascade do |t|
+    t.string "productName"
+    t.integer "amountAvailable", default: 0, null: false
+    t.integer "cost", default: 0, null: false
+    t.bigint "seller_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["seller_id"], name: "index_products_on_seller_id"
+  end
+
   create_table "users", charset: "utf8mb4", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -27,4 +37,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_17_000744) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "products", "users", column: "seller_id"
 end
