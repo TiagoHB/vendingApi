@@ -6,6 +6,11 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
+  enum role: [ :seller, :buyer ]
+
+  validates :deposit, :role, presence: true
+  validates :deposit, numericality: { only_integer: true }
+
   def jwt_payload
     super
   end
