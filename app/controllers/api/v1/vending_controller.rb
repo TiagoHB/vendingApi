@@ -1,4 +1,4 @@
-class VendingController < ApplicationController
+class Api::V1::VendingController < ApplicationController
   before_action :authenticate_user!
   before_action :check_user_type
 
