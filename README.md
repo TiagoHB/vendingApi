@@ -6,19 +6,20 @@ application up and running.
 Things you may want to cover:
 
 * Ruby version
+3.1.2
 
-* System dependencies
+* Rails version
+7.0.4
 
-* Configuration
 
-* Database creation
+* Routes
 
-* Database initialization
+List Products: /api/v1/products
+Detail Product: /api/v1/products/:id
+Update Products: (PATCH)/api/v1/products/:id
+Delete Products: (DELETE)/api/v1/products/:id
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Vending operations:
+Deposit: (POST)/api/v1/deposit
+Buy: (POST)/api/v1/buy
+Reset: (POST)/api/v1/reset
