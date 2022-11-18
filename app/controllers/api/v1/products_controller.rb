@@ -36,16 +36,27 @@ class Api::V1::ProductsController < ApplicationController
 
   # PATCH/PUT api/v1/products/1
   def update
-    if @product.update(product_params)
-      render json: @product
-    else
-      render json: @product.errors, status: :unprocessable_entity
+    begin
+      if @product.update(product_params)
+        render json: @product
+      else
+        render json: @product.errors, status: :unprocessable_entity
+      end
+    rescue Exception => e
+      render :json => "Error saving changes"
+      return
     end
   end
 
   # DELETE api/v1/products/1
   def destroy
-    @product.destroy
+    if @product.destroy
+      render json: { status: 200, message: 'Product removed.' }, status: :ok
+    else
+      render json: {
+        status: { code: 401, message: 'Error removing product.' }#, status: :unauthorized
+      }
+    end
   end
 
   private
