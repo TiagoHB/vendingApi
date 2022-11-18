@@ -9,7 +9,9 @@ class User < ApplicationRecord
   enum role: [ :seller, :buyer ]
 
   validates :deposit, :role, presence: true
-  validates :deposit, numericality: { only_integer: true }
+  validates :coin5, :coin10, :coin20, :coin50, :coin100, numericality: { only_integer: true }
+
+  has_many :products
 
   def jwt_payload
     super

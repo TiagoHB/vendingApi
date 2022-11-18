@@ -21,9 +21,33 @@ RSpec.describe User, type: :model do
     expect(subject).to_not be_valid
   end
 
-  it 'deposit should be integer' do
-    expect(subject.deposit).to be_a(Integer)
-    subject.deposit = 12.7
+  it 'coin5 should be integer' do
+    expect(subject.coin5).to be_a(Integer)
+    subject.coin5 = 12.7
+    expect(subject).to_not be_valid
+  end
+
+  it 'coin10 should be integer' do
+    expect(subject.coin10).to be_a(Integer)
+    subject.coin10 = 12.7
+    expect(subject).to_not be_valid
+  end
+
+  it 'coin20 should be integer' do
+    expect(subject.coin20).to be_a(Integer)
+    subject.coin20 = 12.7
+    expect(subject).to_not be_valid
+  end
+
+  it 'coin50 should be integer' do
+    expect(subject.coin50).to be_a(Integer)
+    subject.coin50 = 12.7
+    expect(subject).to_not be_valid
+  end
+
+  it 'coin100 should be integer' do
+    expect(subject.coin100).to be_a(Integer)
+    subject.coin100 = 12.7
     expect(subject).to_not be_valid
   end
 

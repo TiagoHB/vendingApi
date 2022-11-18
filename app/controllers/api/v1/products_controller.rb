@@ -5,12 +5,6 @@ class Api::V1::ProductsController < ApplicationController
 
   # GET api/v1/products
   def index
-    if current_user
-      logger.debug "==>> current_user: #{current_user.email} <<=="
-      logger.debug "==>> current_user role: #{current_user.role} <<=="
-    else
-      logger.debug "==>> NO USER <<=="
-    end
     @products = Product.all
 
     render json: @products
@@ -23,13 +17,6 @@ class Api::V1::ProductsController < ApplicationController
 
   # POST api/v1/products
   def create
-
-    if current_user
-      logger.debug "==>> USER IS BUYER <<=="
-      logger.debug "==>> current_user: #{current_user.email} <<=="
-    else
-      logger.debug "==>> NO USER <<=="
-    end
     if !current_user || current_user.role == "buyer"
       render json: {
         status: { code: 401, message: 'Operation not authorized.' }#, status: :unauthorized

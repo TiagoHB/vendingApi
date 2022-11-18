@@ -10,8 +10,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :products
 
-      # post "deposit", to: ""
     end
   end
+  
+  post '/deposit' => 'vending#deposit'
+  post '/buy' => 'vending#buy'
+  post '/reset' => 'vending#reset'
 
 end
