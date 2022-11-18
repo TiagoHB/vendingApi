@@ -9,7 +9,7 @@ class User < ApplicationRecord
 
   enum role: [ :seller, :buyer ]
 
-  validates :username, uniqueness: true
+  validates :username, presence: true, uniqueness: true
   validates :deposit, :role, presence: true
   validates :coin5, :coin10, :coin20, :coin50, :coin100, numericality: { only_integer: true }
 

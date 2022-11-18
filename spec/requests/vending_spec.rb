@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Vendings", type: :request do
+RSpec.describe "api/v1/vendings", type: :request do
   describe "GET /deposit" do
     it "returns http success" do
       get "/vending/deposit"

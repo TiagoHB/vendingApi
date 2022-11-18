@@ -17,7 +17,7 @@ RSpec.describe "api/v1/products", type: :request do
   # Product. As you add validations to Product, be sure to
   # adjust the attributes here as well.
   before do
-      @user = User.new(email:'seller@store.com', password:'111111',role:"seller")
+      @user = User.new(username:'sellerStore', password:'111111',role:"seller")
       @user.save
   end
 
