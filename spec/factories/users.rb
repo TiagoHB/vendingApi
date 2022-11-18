@@ -3,6 +3,7 @@ require 'faker'
 
 FactoryBot.define do
   factory :user do
+    username { Faker::Internet.username }
     email { Faker::Internet.email }
     password { Faker::Internet.password(min_length: 6) }
     coin5 { Faker::Number.within(range: 1..20) }
