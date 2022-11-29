@@ -7,7 +7,11 @@ class Api::V1::ProductsController < ApplicationController
   def index
     @products = Product.all
 
-    render json: @products
+    if @products.blank?
+      render json: { code: 200, products: @products, message: 'Products list is empty.' }
+    else
+      render json: @products
+    end
   end
 
   # GET api/v1/products/1
@@ -17,10 +21,8 @@ class Api::V1::ProductsController < ApplicationController
 
   # POST api/v1/products
   def create
-    if !current_user || current_user.role == "buyer"
-      render json: {
-        status: { code: 401, message: 'Operation not authorized.' }#, status: :unauthorized
-      }
+    if current_user.role == "buyer"
+      render json: { code: 401, message: 'Only sellers can create products.' }
       return
     end
 
@@ -28,9 +30,9 @@ class Api::V1::ProductsController < ApplicationController
     @product.seller = current_user
 
     if @product.save
-      render json: @product, status: :created, location: @product
+      render json: { code: 200, message: "Product created successfully.", product: @product }
     else
-      render json: @product.errors, status: :unprocessable_entity
+      render json: { code: 422, message: @product.errors.full_messages }
     end
   end
 
@@ -38,9 +40,9 @@ class Api::V1::ProductsController < ApplicationController
   def update
     begin
       if @product.update(product_params)
-        render json: @product
+        render json: { code: 200, message: "Product updated successfully.", product: @product }
       else
-        render json: @product.errors, status: :unprocessable_entity
+        render json: { code: 422, message: @product.errors.full_messages }
       end
     rescue Exception => e
       render :json => "Error saving changes"
@@ -51,11 +53,9 @@ class Api::V1::ProductsController < ApplicationController
   # DELETE api/v1/products/1
   def destroy
     if @product.destroy
-      render json: { status: 200, message: 'Product removed.' }, status: :ok
+      render json: { code: 200, message: 'Product removed with success.' }
     else
-      render json: {
-        status: { code: 401, message: 'Error removing product.' }#, status: :unauthorized
-      }
+      render json: { code: 401, message: 'Error removing product.' }
     end
   end
 
@@ -67,9 +67,7 @@ class Api::V1::ProductsController < ApplicationController
 
     def check_product_owner
       if !current_user || current_user != @product.seller
-        render json: {
-          status: { code: 401, message: 'Operation not authorized. You must be the product owner to access this functionality.' }#, status: :unauthorized
-        }
+        render json: { code: 401, message: 'Operation not authorized. You must be the product owner to access this functionality.' }
         return
       end
     end
