@@ -6,19 +6,19 @@ class Api::V1::VendingController < ApplicationController
   # X being integer multiple of 5 and under or equal 100
   def deposit
     unless is_integer?(params[:coin_value])
-      render json: { status: 400, message: 'Coin value must be an integer' }, status: :unauthorized
+      render json: { code: 400, message: 'Coin value must be an integer' }, status: :unauthorized
       return
     end
     coin_ins = params[:coin_value].to_i
     if coin_ins.remainder(5) != 0 || coin_ins < 5 || coin_ins > 100
-      render json: { status: 401, message: 'Coin value incorrect.' }, status: :unauthorized
+      render json: { code: 401, message: 'Coin value incorrect.' }, status: :unauthorized
       return
     end
 
     current_user["coin#{coin_ins}"] += 1
 
     if current_user.save
-      render json: { code: 200, message: "Deposited #{coin_ins} coin with success.", data: current_user }
+      render json: { code: 200, message: "Deposited coin with value #{coin_ins} with success.", data: current_user }
     else
       render json: { message: 'Error on deposit', errors: current_user.errors.full_messages }, status: :unprocessable_entity
     end
@@ -29,22 +29,22 @@ class Api::V1::VendingController < ApplicationController
   # returns { "totalSpent": "Z", "product": "productName", "change": { "5": "...", ..., "100": "..."} }
   def buy
     unless params[:productId]
-      render json: { status: 400, message: 'Param missing' }, status: :unauthorized
+      render json: { code: 403, message: 'Param missing' }, status: :unauthorized
       return
     end
     unless is_integer?(params[:amount])
-      render json: { status: 400, message: 'Amount must be an integer' }, status: :unauthorized
+      render json: { code: 403, message: 'Amount must be an integer' }, status: :unauthorized
       return
     end
     buy_amount = params[:amount].to_i
 
     product = Product.find(params[:productId])
     if product.nil?
-      render json: { status: 404, message: "There's no product with the given Id." }, status: :unauthorized
+      render json: { code: 400, message: "There's no product with the given Id." }, status: :unauthorized
       return
     end
     if product.amountAvailable < buy_amount
-      render json: { status: 404, message: "The product quantity inserted is not available. Only #{product.amountAvailable} #{product.productName} available." }, status: :unauthorized
+      render json: { code: 404, message: "The product quantity inserted is not available. Only #{product.amountAvailable} #{product.productName} available." }, status: :unauthorized
       return
     end
 
@@ -57,15 +57,16 @@ class Api::V1::VendingController < ApplicationController
 
     totalCost = product.cost * buy_amount
     if totalCost > user_balance
-      render json: { status: 403, message: "User balance is not enough to buy product." }, status: :unauthorized
+      render json: { code: 403, message: "User balance is not enough to buy product." }, status: :unauthorized
       return
     end
 
-    # pay the product
-    coins_spent = pay(totalCost, coins_attr)
-
-    # calculate change merging the two coins hashes and subtracting values
-    change = coins_attr.merge(coins_spent) { | k, v1, v2| v1 - v2 }
+    # # pay the product
+    # coins_spent = pay(totalCost, coins_attr)
+    # # calculate change merging the two coins hashes and subtracting values
+    # change = coins_attr.merge(coins_spent) { | k, v1, v2| v1 - v2 }
+    
+    change = get_change(user_balance - totalCost)
 
     begin
       User.transaction do
@@ -87,9 +88,9 @@ class Api::V1::VendingController < ApplicationController
 
   def reset
     if current_user.update(coin5: 0, coin10: 0, coin20: 0, coin50: 0, coin100: 0)
-      render json: { status: 200, message: 'User deposit was reseted.' }, status: :ok
+      render json: { code: 200, message: 'User deposit was reseted.' }, status: :ok
     else
-      render json: { status: 401, message: current_user.errors }, status: :unprocessable_entity
+      render json: { code: 500, message: current_user.errors }, status: :unprocessable_entity
     end
   end
 
@@ -97,12 +98,12 @@ class Api::V1::VendingController < ApplicationController
 
   def check_user_type
     unless current_user
-      render json: { status: 401, message: 'User has no active session' }, status: :unauthorized
+      render json: { code: 401, message: 'User has no active session' }, status: :unauthorized
       return
     end
 
     if current_user.role != "buyer"
-      render json: { status: 401, message: 'Operation not authorized.' }, status: :unauthorized
+      render json: { code: 401, message: 'Operation not authorized. Only buyers have access.' }, status: :unauthorized
       return
     end
   end
@@ -111,7 +112,18 @@ class Api::V1::VendingController < ApplicationController
     true if Integer(string) rescue false
   end
 
-  # pay the product(s) and returne coins spent
+  # pay the product(s) and returne change
+  def get_change(total_change)
+    coins = [ 5, 10, 20, 50, 100 ]
+    coins.reverse.each_with_object(Hash.new(0)) do |coin, denoms_hash|
+      coins_to_take = 0
+      coins_to_take = total_change.divmod(coin).first
+      denoms_hash[coin] = coins_to_take
+      total_change -= coins_to_take * coin
+    end
+  end
+
+  # pay the product(s) and returne coins spent / Using only inserted coins
   def pay(cost, coins)
     coins.each_with_object(Hash.new(0)) do |coin, denoms_hash|
       coins_to_take = 0
