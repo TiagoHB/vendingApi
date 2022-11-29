@@ -11,6 +11,6 @@ FactoryBot.define do
     coin20 { Faker::Number.within(range: 1..20) }
     coin50 { Faker::Number.within(range: 1..20) }
     coin100 { Faker::Number.within(range: 1..20) }
-    role { Faker::Number.within(range: 0..1) }
+    role { "seller" }
   end
 end

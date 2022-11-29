@@ -54,6 +54,8 @@ RSpec.describe User, type: :model do
   it 'role should be present' do
     subject.role = nil
     expect(subject).to_not be_valid
+    subject.role = "buyer"
+    expect(subject).to be_valid
   end
 
 end
