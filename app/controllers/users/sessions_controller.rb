@@ -6,16 +6,12 @@ class Users::SessionsController < Devise::SessionsController
   private
 
   def respond_with(resource, options={})
-    render json: {
-      status: { code: 200, message: 'Signed in with success.', data: current_user }#, status: :ok
-    }
+    render json: { code: 200, message: 'Signed in with success.', data: current_user }
   end
 
   def respond_to_on_destroy
     if request.headers['Authorization'].blank?
-      render json: {
-        status: { code: 401, message: 'Missing data.' }#, status: :unauthorized
-      }
+      render json: { code: 401, message: 'Missing header data.' }
       return
     end
     
@@ -23,13 +19,9 @@ class Users::SessionsController < Devise::SessionsController
     # debugger
     current_user = User.find_by_jti(jwt_payload['jti'])
     if current_user
-      render json: {
-        status: { code: 200, message: 'Signed out with success.' }#, status: :ok
-      }
+      render json: { code: 200, message: 'Signed out with success.' }
     else
-      render json: {
-        status: { code: 401, message: 'User is not logged.' }#, status: :unauthorized
-      }
+      render json: { code: 401, message: 'User is not logged.' }
     end
   end
 

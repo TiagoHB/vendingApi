@@ -31,14 +31,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_18_015234) do
     t.datetime "updated_at", null: false
     t.string "jti", null: false
     t.integer "role", default: 0
-    t.integer "deposit", default: 0
     t.integer "coin5", default: 0
     t.integer "coin10", default: 0
     t.integer "coin20", default: 0
     t.integer "coin50", default: 0
     t.integer "coin100", default: 0
     t.string "username"
-    t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true

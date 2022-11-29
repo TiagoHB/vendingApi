@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   devise_for :users,
     controllers: {
       sessions: 'users/sessions',
-      resgistrations: 'users/resgistrations'
+      registrations: 'users/registrations'
     }
 
   namespace :api do

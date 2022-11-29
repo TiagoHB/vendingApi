@@ -10,10 +10,10 @@ class User < ApplicationRecord
   enum role: [ :seller, :buyer ]
 
   validates :username, presence: true, uniqueness: true
-  validates :deposit, :role, presence: true
+  validates :role, presence: true
   validates :coin5, :coin10, :coin20, :coin50, :coin100, numericality: { only_integer: true }
 
-  has_many :products
+  has_many :products, foreign_key: 'seller_id', dependent: :destroy
   
   def email_required?
     false
